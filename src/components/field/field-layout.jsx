@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 import styles from './field.module.scss'
 
-export const FieldLayout = ({ children, info, handleReset, win }) => {
+export const FieldLayout = ({ children, info, handleReset, winner }) => {
 	return (
 		<>
 			<header className={styles.header}>
@@ -13,9 +13,9 @@ export const FieldLayout = ({ children, info, handleReset, win }) => {
 			</header>
 			<main className={styles.main}>
 				<ul className={styles.field}>{children}</ul>
-				<div className={win.length ? `${styles.win} ${styles.visible}` : styles.win}>
-					<p className={styles.player}>{win.at(1)}</p>
-					<p>{win.at(0)}</p>
+				<div className={winner.length ? `${styles.win} ${styles.visible}` : styles.win}>
+					<p className={styles.player}>{winner.at(1)}</p>
+					<p>{winner.at(0)}</p>
 				</div>
 			</main>
 		</>
@@ -25,5 +25,5 @@ export const FieldLayout = ({ children, info, handleReset, win }) => {
 FieldLayout.propTypes = {
 	info: PropTypes.string,
 	handlerReset: PropTypes.func,
-	win: PropTypes.array,
+	winner: PropTypes.array,
 }
