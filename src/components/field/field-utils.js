@@ -1,4 +1,4 @@
-export const checkWinner = (player, scoring, setWin, setGameInfo) => {
+export const checkWinner = (player, scoring, setWinner, setGameInfo) => {
 	const winningCombinations = [
 		['1', '2', '3'],
 		['4', '5', '6'],
@@ -12,7 +12,7 @@ export const checkWinner = (player, scoring, setWin, setGameInfo) => {
 	winningCombinations.forEach((arr) => {
 		const [a, b, c] = arr
 		if (scoring[a] === player && scoring[b] === player && scoring[c] === player) {
-			setWin(['Победитель', player])
+			setWinner(['Победитель', player])
 			setGameInfo('Игра окончена')
 		}
 	})

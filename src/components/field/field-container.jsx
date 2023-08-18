@@ -13,7 +13,7 @@ export const FieldContainer = () => {
 	const [isReset, setIsReset] = useState(false)
 	const [numberMoves, setNumberMoves] = useState(0)
 	const [scoring, setScoring] = useState({})
-	const [win, setWin] = useState([])
+	const [winner, setWinner] = useState([])
 
 	const handleProgressGame = (id) => {
 		setNumberMoves(numberMoves + 1)
@@ -26,10 +26,10 @@ export const FieldContainer = () => {
 		setGameInfo(`Ходит ${player}`)
 		if (numberMoves === 9) {
 			setGameInfo('Игра окончена')
-			setWin(['Ничья', `${cross} ${zero}`])
+			setWinner(['Ничья', `${cross} ${zero}`])
 		}
 		if (numberMoves >= 5) {
-			checkWinner(prevPlayer, scoring, setWin, setGameInfo)
+			checkWinner(prevPlayer, scoring, setWinner, setGameInfo)
 		}
 	}, [scoring])
 	const handleReset = () => {
@@ -37,12 +37,12 @@ export const FieldContainer = () => {
 		setPlayer(PLAYERS.cross)
 		setIsReset(!isReset)
 		setScoring({})
-		setWin([])
+		setWinner([])
 		setGameInfo(`Ходит ${player}`)
 	}
 
 	return (
-		<FieldLayout handleReset={handleReset} info={gameInfo} win={win}>
+		<FieldLayout handleReset={handleReset} info={gameInfo} winner={winner}>
 			{CELLS.map((cell) => (
 				<CellContainer
 					key={cell}
