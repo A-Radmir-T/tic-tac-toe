@@ -2,29 +2,37 @@ import { useEffect, useState } from 'react'
 
 import { CellLayout } from './cell-layout'
 import PropTypes from 'prop-types'
+import { store } from '../../store'
+import { PLAYERS } from '../../constants'
+import { makeMove } from '../../redux/actions'
 
-export const CellContainer = ({ id, handleProgressGame, isReset, nextMove }) => {
-	const [player, setPlayer] = useState(null)
+export const CellContainer = ({ id, isReset }) => {
+	const [currentPlayer, setCurrentPlayer] = useState(null)
 
 	useEffect(() => {
-		setPlayer(null)
+		setCurrentPlayer(null)
 	}, [isReset])
 
 	const handlerOnClick = () => {
-		if (!player) {
-			setPlayer(nextMove)
-			handleProgressGame(id)
+		const { nextPlayer } = store.getState()
+		if (!currentPlayer) {
+			setCurrentPlayer(nextPlayer)
+			store.dispatch(
+				makeMove({
+					player: nextPlayer === PLAYERS.cross ? PLAYERS.zero : PLAYERS.cross,
+					scoring: { [id]: nextPlayer },
+				}),
+			)
 		}
 	}
 	return (
 		<CellLayout id={id} handlerOnClick={handlerOnClick}>
-			{player}
+			{currentPlayer}
 		</CellLayout>
 	)
 }
 
 CellContainer.propTypes = {
-	handleProgressGame: PropTypes.func,
 	isReset: PropTypes.bool,
 	id: PropTypes.string,
 }

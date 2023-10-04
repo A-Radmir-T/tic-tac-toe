@@ -4,53 +4,42 @@ import { FieldLayout } from './field-layout'
 import { CellContainer } from '../cell/cell-container'
 import { CELLS, PLAYERS } from '../../constants'
 import { checkWinner } from './field-utils'
+import { store } from '../../store'
+import { reset } from '../../redux/actions'
 
 export const FieldContainer = () => {
-	const { cross, zero } = PLAYERS
-	const [player, setPlayer] = useState(cross)
-	const [prevPlayer, setPrevPlayer] = useState(player)
-	const [gameInfo, setGameInfo] = useState('')
+	const [gameInfo, setGameInfo] = useState(`Ходит: ${PLAYERS.cross}`)
 	const [isReset, setIsReset] = useState(false)
-	const [numberMoves, setNumberMoves] = useState(0)
-	const [scoring, setScoring] = useState({})
-	const [winner, setWinner] = useState([])
-
-	const handleProgressGame = (id) => {
-		setNumberMoves(numberMoves + 1)
-		setScoring({ ...scoring, [id]: player })
-		setPrevPlayer(player)
-		setPlayer(player === zero ? cross : zero)
-	}
+	const [stopGame, setStopGame] = useState([])
 
 	useEffect(() => {
-		setGameInfo(`Ходит ${player}`)
-		if (numberMoves === 9) {
-			setGameInfo('Игра окончена')
-			setWinner(['Ничья', `${cross} ${zero}`])
-		}
-		if (numberMoves >= 5) {
-			checkWinner(prevPlayer, scoring, setWinner, setGameInfo)
-		}
-	}, [scoring])
+		const subStore = store.subscribe(
+			({ nextPlayer, currentPlayer, scoring, numberMoves, winner }) => {
+				if (winner) {
+					setGameInfo('Игра окончена')
+					setStopGame(winner)
+					return
+				}
+				setGameInfo(`Ходит: ${nextPlayer}`)
+				if (numberMoves >= 5) {
+					checkWinner(currentPlayer, scoring, numberMoves)
+				}
+			},
+		)
+
+		return subStore.unsubscribe()
+	}, [])
 	const handleReset = () => {
-		setNumberMoves(0)
-		setPlayer(PLAYERS.cross)
+		store.dispatch(reset())
 		setIsReset(!isReset)
-		setScoring({})
-		setWinner([])
-		setGameInfo(`Ходит ${player}`)
+		setStopGame([])
+		setGameInfo(`Ходит: ${PLAYERS.cross}`)
 	}
 
 	return (
-		<FieldLayout handleReset={handleReset} info={gameInfo} winner={winner}>
+		<FieldLayout handleReset={handleReset} info={gameInfo} winner={stopGame}>
 			{CELLS.map((cell) => (
-				<CellContainer
-					key={cell}
-					id={cell}
-					handleProgressGame={handleProgressGame}
-					isReset={isReset}
-					nextMove={player}
-				/>
+				<CellContainer key={cell} id={cell} isReset={isReset} />
 			))}
 		</FieldLayout>
 	)
