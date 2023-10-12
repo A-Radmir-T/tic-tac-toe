@@ -6,38 +6,35 @@ import { CELLS, PLAYERS } from '../../constants'
 import { checkWinner } from './field-utils'
 import { store } from '../../store'
 import { reset } from '../../redux/actions'
+import { useSelector } from 'react-redux'
+import {
+	selectCurrentPlayer,
+	selectNextPlayer,
+	selectNumberMoves,
+	selectScoring,
+	selectWinner,
+} from '../../redux/selectors'
 
 export const FieldContainer = () => {
-	const [gameInfo, setGameInfo] = useState(`Ходит: ${PLAYERS.cross}`)
 	const [isReset, setIsReset] = useState(false)
-	const [stopGame, setStopGame] = useState([])
 
-	useEffect(() => {
-		const subStore = store.subscribe(
-			({ nextPlayer, currentPlayer, scoring, numberMoves, winner }) => {
-				if (winner) {
-					setGameInfo('Игра окончена')
-					setStopGame(winner)
-					return
-				}
-				setGameInfo(`Ходит: ${nextPlayer}`)
-				if (numberMoves >= 5) {
-					checkWinner(currentPlayer, scoring, numberMoves)
-				}
-			},
-		)
+	const nextPlayer = useSelector(selectNextPlayer)
+	const currentPlayer = useSelector(selectCurrentPlayer)
+	const scoring = useSelector(selectScoring)
+	const numberMoves = useSelector(selectNumberMoves)
+	const winner = useSelector(selectWinner)
 
-		return subStore.unsubscribe()
-	}, [])
+	if (numberMoves >= 5 && !winner.length) {
+		checkWinner(currentPlayer, scoring, numberMoves)
+	}
+
 	const handleReset = () => {
 		store.dispatch(reset())
 		setIsReset(!isReset)
-		setStopGame([])
-		setGameInfo(`Ходит: ${PLAYERS.cross}`)
 	}
 
 	return (
-		<FieldLayout handleReset={handleReset} info={gameInfo} winner={stopGame}>
+		<FieldLayout handleReset={handleReset} info={nextPlayer} winner={winner}>
 			{CELLS.map((cell) => (
 				<CellContainer key={cell} id={cell} isReset={isReset} />
 			))}

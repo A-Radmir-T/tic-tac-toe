@@ -6,7 +6,7 @@ export const initialState = {
 	currentPlayer: '',
 	scoring: {},
 	numberMoves: 0,
-	winner: null,
+	winner: [],
 }
 
 export const reducer = (state = initialState, action) => {
@@ -18,6 +18,7 @@ export const reducer = (state = initialState, action) => {
 
 		case MAKE_MOVE:
 			return {
+				...state,
 				scoring: { ...state.scoring, ...payload.scoring },
 				nextPlayer: payload.player,
 				currentPlayer: state.nextPlayer,

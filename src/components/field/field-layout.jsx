@@ -8,7 +8,7 @@ export const FieldLayout = ({ children, info, handleReset, winner }) => {
 			<header className={styles.header}>
 				<button onClick={() => handleReset()}>Начать заново</button>
 				<div className={styles.info}>
-					<span>{info}</span>
+					{winner.length ? <span>Игра окончена</span> : <span>Ходит: {info}</span>}
 				</div>
 			</header>
 			<main className={styles.main}>

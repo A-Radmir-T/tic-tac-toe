@@ -1,6 +1,5 @@
 import { store } from '../../store'
 import { PLAYERS } from '../../constants'
-import { GAME_OVER } from '../../redux/types'
 import { gameOver } from '../../redux/actions'
 
 export const checkWinner = (player, scoring, numberMoves) => {

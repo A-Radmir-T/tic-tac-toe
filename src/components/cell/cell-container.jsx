@@ -5,16 +5,17 @@ import PropTypes from 'prop-types'
 import { store } from '../../store'
 import { PLAYERS } from '../../constants'
 import { makeMove } from '../../redux/actions'
+import { useSelector } from 'react-redux'
+import { selectNextPlayer } from '../../redux/selectors'
 
 export const CellContainer = ({ id, isReset }) => {
 	const [currentPlayer, setCurrentPlayer] = useState(null)
+	const nextPlayer = useSelector(selectNextPlayer)
 
 	useEffect(() => {
 		setCurrentPlayer(null)
 	}, [isReset])
-
 	const handlerOnClick = () => {
-		const { nextPlayer } = store.getState()
 		if (!currentPlayer) {
 			setCurrentPlayer(nextPlayer)
 			store.dispatch(
