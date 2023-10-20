@@ -1,39 +1,53 @@
-import { useEffect, useState } from 'react'
+import { Component } from 'react'
 
 import { CellLayout } from './cell-layout'
 import PropTypes from 'prop-types'
 import { store } from '../../store'
 import { PLAYERS } from '../../constants'
 import { makeMove } from '../../redux/actions'
-import { useSelector } from 'react-redux'
-import { selectNextPlayer } from '../../redux/selectors'
+import { connect } from 'react-redux'
 
-export const CellContainer = ({ id, isReset }) => {
-	const [currentPlayer, setCurrentPlayer] = useState(null)
-	const nextPlayer = useSelector(selectNextPlayer)
+export class CellContainer extends Component {
+	constructor(props) {
+		super(props)
 
-	useEffect(() => {
-		setCurrentPlayer(null)
-	}, [isReset])
-	const handlerOnClick = () => {
-		if (!currentPlayer) {
-			setCurrentPlayer(nextPlayer)
+		this.state = {
+			currentPlayer: null,
+		}
+	}
+
+	render() {
+		return (
+			<CellLayout id={this.props.id} handlerOnClick={this.handlerOnClick}>
+				{this.state.currentPlayer}
+			</CellLayout>
+		)
+	}
+
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		if (prevProps.isReset !== this.props.isReset) this.setState({ currentPlayer: null })
+	}
+
+	handlerOnClick = () => {
+		if (!this.state.currentPlayer) {
+			this.setState({ currentPlayer: this.props.nextPlayer })
 			store.dispatch(
 				makeMove({
-					player: nextPlayer === PLAYERS.cross ? PLAYERS.zero : PLAYERS.cross,
-					scoring: { [id]: nextPlayer },
+					player: this.props.nextPlayer === PLAYERS.cross ? PLAYERS.zero : PLAYERS.cross,
+					scoring: { [this.props.id]: this.props.nextPlayer },
 				}),
 			)
 		}
 	}
-	return (
-		<CellLayout id={id} handlerOnClick={handlerOnClick}>
-			{currentPlayer}
-		</CellLayout>
-	)
 }
 
 CellContainer.propTypes = {
-	isReset: PropTypes.bool,
 	id: PropTypes.string,
 }
+
+const mapStateToProps = (state) => ({
+	nextPlayer: state.nextPlayer,
+	isReset: state.isReset,
+})
+
+export const Cell = connect(mapStateToProps)(CellContainer)

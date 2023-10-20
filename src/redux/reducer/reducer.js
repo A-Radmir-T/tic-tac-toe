@@ -7,6 +7,7 @@ export const initialState = {
 	scoring: {},
 	numberMoves: 0,
 	winner: [],
+	isReset: false,
 }
 
 export const reducer = (state = initialState, action) => {
@@ -14,7 +15,10 @@ export const reducer = (state = initialState, action) => {
 
 	switch (type) {
 		case RESET:
-			return initialState
+			return {
+				...initialState,
+				isReset: !state.isReset,
+			}
 
 		case MAKE_MOVE:
 			return {

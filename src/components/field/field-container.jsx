@@ -1,43 +1,46 @@
-import { useEffect, useState } from 'react'
-
 import { FieldLayout } from './field-layout'
-import { CellContainer } from '../cell/cell-container'
-import { CELLS, PLAYERS } from '../../constants'
-import { checkWinner } from './field-utils'
-import { store } from '../../store'
+import { Cell } from '../cell/cell-container'
+import { CELLS } from '../../constants'
 import { reset } from '../../redux/actions'
-import { useSelector } from 'react-redux'
-import {
-	selectCurrentPlayer,
-	selectNextPlayer,
-	selectNumberMoves,
-	selectScoring,
-	selectWinner,
-} from '../../redux/selectors'
+import { connect } from 'react-redux'
+import { Component } from 'react'
+import { checkWinner } from './field-utils'
 
-export const FieldContainer = () => {
-	const [isReset, setIsReset] = useState(false)
-
-	const nextPlayer = useSelector(selectNextPlayer)
-	const currentPlayer = useSelector(selectCurrentPlayer)
-	const scoring = useSelector(selectScoring)
-	const numberMoves = useSelector(selectNumberMoves)
-	const winner = useSelector(selectWinner)
-
-	if (numberMoves >= 5 && !winner.length) {
-		checkWinner(currentPlayer, scoring, numberMoves)
+export class FieldContainer extends Component {
+	constructor(props) {
+		super(props)
+	}
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		if (this.props.numberMoves >= 5 && !this.props.winner.length) {
+			checkWinner(this.props.currentPlayer, this.props.scoring, this.props.numberMoves)
+		}
 	}
 
-	const handleReset = () => {
-		store.dispatch(reset())
-		setIsReset(!isReset)
+	handleRest() {
+		this.props.dispatch(reset())
 	}
 
-	return (
-		<FieldLayout handleReset={handleReset} info={nextPlayer} winner={winner}>
-			{CELLS.map((cell) => (
-				<CellContainer key={cell} id={cell} isReset={isReset} />
-			))}
-		</FieldLayout>
-	)
+	render() {
+		return (
+			<FieldLayout
+				handleReset={this.handleRest.bind(this)}
+				info={this.props.nextPlayer}
+				winner={this.props.winner}
+			>
+				{CELLS.map((cell) => (
+					<Cell key={cell} id={cell} />
+				))}
+			</FieldLayout>
+		)
+	}
 }
+
+const mapStateToProps = (state) => ({
+	nextPlayer: state.nextPlayer,
+	currentPlayer: state.currentPlayer,
+	scoring: state.scoring,
+	numberMoves: state.numberMoves,
+	winner: state.winner,
+})
+
+export const Field = connect(mapStateToProps)(FieldContainer)

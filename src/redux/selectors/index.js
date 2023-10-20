@@ -1,5 +1,0 @@
-export * from './select-next-player'
-export * from './select-current-player'
-export * from './select-number-moves'
-export * from './select-winner'
-export * from './select-scoring'
